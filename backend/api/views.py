@@ -131,7 +131,7 @@ class ProductDetail(APIView):
         try:
             return Product.objects.get(id=pk)
         except Product.DoesNotExist:
-            raise Http404
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def get(self, request, pk, format=None):
         product = self.get_object(pk)

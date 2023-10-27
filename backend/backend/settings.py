@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'api.apps.ApiConfig',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_rest_passwordreset',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -112,6 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ]
 }
 
