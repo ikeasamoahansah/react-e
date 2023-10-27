@@ -1,5 +1,3 @@
-from .models import *
-from .serializers import *
 from django.http import Http404
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
@@ -8,12 +6,14 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
 from rest_framework import status
-from .permissions import IsOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework import generics
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.authentication import TokenAuthentication
+from .models import *
+from .serializers import *
+from .permissions import IsOwnerOrReadOnly
 
 
 @api_view(['GET'])
@@ -99,15 +99,31 @@ class ProductsList(APIView):
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
    
+    # def post(self, request, format=None):
+    #     serializer = ProductSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # def perform_create(self, serializer):
+    #     serializer.save(user=self.request.user)
+
+
+class ProductCreateAPIView(APIView):
     def post(self, request, format=None):
+        user_id = request.data.get('user')
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_400_BAD_REQUEST)
+        
         serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=user)  # Assign the current user to the product
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
 
 
 class ProductDetail(APIView):
@@ -115,7 +131,7 @@ class ProductDetail(APIView):
         try:
             return Product.objects.get(id=pk)
         except Product.DoesNotExist:
-            raise Http404
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def get(self, request, pk, format=None):
         product = self.get_object(pk)
@@ -137,7 +153,7 @@ class ProductDetail(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     parser_classes = [MultiPartParser, FormParser]
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
 
 class Reviews(APIView):
 

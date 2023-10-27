@@ -16,6 +16,7 @@ urlpatterns = [
     path('users/<str:pk>/', UserDetail.as_view(), name="user-detail"),
 
     path('products/', ProductsList.as_view(), name="product-list"),
+    path('products/add/', ProductCreateAPIView.as_view(), name="product-add"),
     path('products/<uuid:pk>/', ProductDetail.as_view(), name="product-detail"),
 
     path('reviews/', Reviews.as_view(), name="review-list"),
