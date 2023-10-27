@@ -1,5 +1,3 @@
-from .models import *
-from .serializers import *
 from django.http import Http404
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
@@ -8,12 +6,14 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
 from rest_framework import status
-from .permissions import IsOwnerOrReadOnly
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework import generics
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.authentication import TokenAuthentication
+from .models import *
+from .serializers import *
+from .permissions import IsOwnerOrReadOnly
 
 
 @api_view(['GET'])
@@ -153,7 +153,7 @@ class ProductDetail(APIView):
 
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     parser_classes = [MultiPartParser, FormParser]
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
 
 class Reviews(APIView):
 
